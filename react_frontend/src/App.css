@@ -1,0 +1,208 @@
+* {
+  @apply select-none;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 5px;
+    height: 3px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #8c2a8d;
+    border-radius: 100vh;
+    border: 1px solid #8c2a8d;
+  }
+}
+
+html {
+  font-size: 16px;
+}
+
+@keyframes slideIn {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.navbar-link {
+  @apply text-themeBlack font-[500] text-[1rem] relative;
+}
+
+.navbar-link.active {
+  @apply !text-primary;
+}
+
+.navbar-link::after {
+  content: "";
+  @apply absolute left-0 bottom-[-0.19rem] bg-gradient-to-r from-[#E1D9E9] to-[#8C2A8D] h-[0.19rem] rounded-full;
+  width: 0;
+  transition: width 0.3s ease-in-out;
+}
+
+.navbar-link.active::after {
+  width: 100%;
+  animation: slideIn 0.3s ease-in-out forwards;
+}
+
+.btn-outline {
+  @apply border-[0.13rem] !border-primary rounded-[0.5rem] p-[0.6rem_1.3rem] font-[700] text-[0.9rem] !text-primary hover:!bg-[white];
+}
+
+.btn-primary {
+  @apply rounded-[0.5rem] p-[0.6rem_1.3rem] font-[700] text-[0.9rem] !text-white !bg-primary hover:bg-white;
+}
+
+input[type="text"].signup-input:focus {
+  outline: none;
+  border: 1px solid #cccccc !important;
+}
+input[type="text"].signup-input {
+  @apply outline-none !border !border-[#CCCCCC] !pl-[0px] w-[300px] h-[50px] placeholder:text-[black] placeholder:text-[20px] placeholder:font-[400] text-[20px] md:text-[25px] lg:text-[28px] xl:text-[30px] font-[700] text-[#0072BB];
+}
+
+.S9gUrf-YoZ4jf {
+  @apply flex items-center justify-center !w-[2.5rem] !h-[2.5rem] rounded-full !border !border-[#CAC2D1] hover:bg-[#CAC2D1] cursor-pointer;
+}
+
+.slick-arrow slick-prev {
+  background-color: black;
+}
+
+.slick-prev:before {
+  /* background-color: #8c2a8d; */
+  color: #8c2a8d !important;
+}
+.slick-next:before {
+  color: #8c2a8d !important;
+}
+
+@media screen and (max-width: 720px) {
+  html {
+    font-size: 13px;
+  }
+}
+.form-bg {
+  background: var(--background-image);
+  background-repeat: no-repeat !important;
+  width: auto !important;
+  height: auto !important;
+  background-color: #000000;
+  background-size: cover;
+  background-position: center;
+}
+
+.arrow-up {
+  width: 24px;
+  height: 40px;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 20px solid #cac2d1;
+  @apply absolute top-[-20px] right-0 translate-x-[50%] z-[-1];
+}
+
+.btn-active {
+  @apply border-[0.13rem] !border-[#039412] !bg-[#039412] rounded-[0.5rem] p-[0.188rem_1.15rem] font-[600] text-[1rem] leading-[0.23rem] text-white hover:!bg-white;
+}
+
+@keyframes fadeInSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-slide-in {
+  animation: fadeInSlideIn 0.5s ease-out forwards;
+}
+
+.fade-in-slide-out {
+  animation: fadeInSlideIn 0.5s ease-out forwards;
+}
+
+.btn-purchase {
+  @apply border-[0.125rem] border-primary rounded-[0.5rem] p-[0.9rem_3.438rem] font-[700] text-[0.9rem] !text-primary hover:!bg-white;
+}
+.container-custom {
+  max-width: 100%;
+  padding: 0 3.125rem;
+}
+@media screen and (max-width: 1024px) {
+  .container-custom {
+    padding: 0 1rem;
+  }
+}
+@media screen and (max-width: 767px) {
+  .btn-purchase {
+    padding: 0.9rem 2rem;
+  }
+}
+
+/* ==================================Range_Slider================================== */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Track Styles */
+/* Chrome, Safari, Opera, Edge Chromium */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(to right, #8c2a8d 0%, #e1d8e9 0%);
+  height: 0.4rem;
+  border-radius: 100px;
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-track {
+  background: linear-gradient(to right, #8c2a8d 0%, #e1d8e9 0%);
+  height: 0.4rem;
+  border-radius: 100px;
+}
+
+/* Thumb Styles */
+
+/* Chrome, Safari, Opera, Edge Chromium */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  background-color: #8c2a8d;
+  height: 0.8rem; /* Adjusted thumb height */
+  width: 0.8rem; /* Adjusted thumb width */
+  border-radius: 50%;
+  margin-top: -0.2rem; /* Center the thumb vertically */
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+  background-color: #8c2a8d;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* IE */
+input[type="range"]::-ms-thumb {
+  background-color: #8c2a8d;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
