@@ -27,6 +27,12 @@ const Welcome = () => {
           >
             Dashboard
           </Link>
+          <Link
+            to="/chat"
+            className="px-8 py-3 bg-white text-indigo-600 font-semibold rounded-full shadow-lg hover:bg-gray-200 transition-all duration-300"
+          >
+            Chat
+          </Link>
         </div>
       </div>
     </div>
