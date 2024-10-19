@@ -4,8 +4,8 @@ const chatSchema = new mongoose.Schema({
   senderId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   message: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }
-});
+  productId : {type : String, require: true}
+},{ timestamps: true });
 
 const Chat = mongoose.model('Chat', chatSchema);
 

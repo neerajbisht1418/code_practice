@@ -1,20 +1,21 @@
 const Chat = require('../models/Chat');
 
-const saveMessage = async (senderId, receiverId, message) => {
+const saveMessage = async (senderId, receiverId, message,productId) => {
   const chatMessage = new Chat({
     senderId,
     receiverId,
-    message
+    message,
+    productId
   });
   await chatMessage.save();
   return chatMessage;
 };
 
-const getChatHistory = async (userId, sellerId) => {
+const getChatHistory = async (userId, sellerId,productId) => {
   return await Chat.find({
     $or: [
-      { senderId: userId, receiverId: sellerId },
-      { senderId: sellerId, receiverId: userId }
+      { senderId: userId, receiverId: sellerId , productId:productId},
+      { senderId: sellerId, receiverId: userId,productId:productId }
     ]
   }).sort({ timestamp: 1 });
 };

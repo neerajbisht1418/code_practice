@@ -22,8 +22,9 @@ const initializeSocket = (server) => {
     });
 
     socket.on('sendMessage', async (message) => {
+      console.log("message================>>>>>>+++++",message)
       logger.info('Message received:', message);
-      const receiverSocketId = users[message.receiver];
+      const receiverSocketId = users[message.receiverId];
 
       try {
         // Save message to database (assuming you have a saveMessage function)
