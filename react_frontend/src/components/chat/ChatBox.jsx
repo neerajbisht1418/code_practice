@@ -2,14 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, User } from 'lucide-react';
 import { connectSocket, sendMessage, onMessageReceived, disconnectSocket } from '../../services/socketService';
 
-const ChatBox = ({ userId, partnerId }) => {
+const ChatBox = ({ userId, partnerId,productId }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const socket = connectSocket(userId);
-
     onMessageReceived((message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
@@ -25,15 +24,14 @@ const ChatBox = ({ userId, partnerId }) => {
     e.preventDefault();
     if (message) {
       const newMessage = {
-        text: message,
-        sender: userId,
-        receiver: partnerId,
+        message: message,
+        senderId: userId,
+        receiverId: partnerId,
         timestamp: new Date().toISOString(),
+        productId 
       };
-
-      // Use the service to send the message
       sendMessage(newMessage);
-      setMessage(''); // Clear the input field after sending
+      setMessage('');
     }
   };
 
@@ -43,11 +41,11 @@ const ChatBox = ({ userId, partnerId }) => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex ${msg.sender === userId ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`flex items-end space-x-2 ${
-                msg.sender === userId ? 'flex-row-reverse space-x-reverse' : 'flex-row'
+                msg.senderId === userId ? 'flex-row-reverse space-x-reverse' : 'flex-row'
               }`}
             >
               <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center">
@@ -55,10 +53,10 @@ const ChatBox = ({ userId, partnerId }) => {
               </div>
               <div
                 className={`rounded-lg py-2 px-4 max-w-xs ${
-                  msg.sender === userId ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'
+                  msg.senderId === userId ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'
                 }`}
               >
-                <p>{msg.text}</p>
+                <p>{msg.message}</p>
                 <span className="text-xs opacity-75 mt-1 block">
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>

@@ -5,13 +5,16 @@ const UserChatPage = () => {
   
   const userId = '6713704d225eb2492373a679'; 
   const sellerId = '67137039225eb2492373a674'; 
+  const productId = "123456789"
+
+
   return (
     <div className="h-full flex flex-col">
       <header className="bg-blue-600 text-white py-4 px-6">
         <h2 className="text-xl font-semibold">User Chat</h2>
       </header>
       <div className="flex-1">
-        <ChatBox userId={userId} partnerId={sellerId} />
+        <ChatBox userId={userId} partnerId={sellerId} productId={productId} />
       </div>
     </div>
   );
