@@ -12,10 +12,10 @@ exports.getChatHistory = async (req, res, next) => {
 };
 
 exports.saveChatMessage = async (req, res, next) => {
-  const { senderId, receiverId, message ,productId} = req.body;
+  const { senderId, receiverId, message ,productId,timestamp} = req.body;
 
   try {
-    const savedMessage = await saveMessage(senderId, receiverId, message,productId);
+    const savedMessage = await saveMessage(senderId, receiverId, message,productId,timestamp);
     res.status(201).json(savedMessage);
   } catch (error) {
     console.error('Error in saveChatMessage controller:', error);

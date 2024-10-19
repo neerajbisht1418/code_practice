@@ -1,11 +1,12 @@
 const Chat = require('../models/Chat');
 
-const saveMessage = async (senderId, receiverId, message,productId) => {
+const saveMessage = async (senderId, receiverId, message,productId,timestamp) => {
   const chatMessage = new Chat({
     senderId,
     receiverId,
     message,
-    productId
+    productId,
+    timestamp
   });
   await chatMessage.save();
   return chatMessage;

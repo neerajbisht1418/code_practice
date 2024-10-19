@@ -22,7 +22,6 @@ const initializeSocket = (server) => {
     });
 
     socket.on('sendMessage', async (message) => {
-      console.log("message================>>>>>>+++++",message)
       logger.info('Message received:', message);
       const receiverSocketId = users[message.receiverId];
 
