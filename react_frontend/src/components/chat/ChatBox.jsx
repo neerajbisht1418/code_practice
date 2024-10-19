@@ -1,43 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
 import { Send, User } from 'lucide-react';
+import { connectSocket, sendMessage, onMessageReceived, disconnectSocket } from '../../services/socketService';
 
 const ChatBox = ({ userId, partnerId }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [socket, setSocket] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3000');
-    setSocket(newSocket);
-    newSocket.on('connect', () => {
-      console.log('Connected to server');
-      newSocket.emit('join', { userId });
-    });
-    
-    newSocket.on('message', (message) => {
+    const socket = connectSocket(userId);
+
+    onMessageReceived((message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-
-    return () => newSocket.close();
+    
+    return () => disconnectSocket();
   }, [userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = (e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
-    if (message && socket) {
+    if (message) {
       const newMessage = {
         text: message,
         sender: userId,
         receiver: partnerId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      socket.emit('sendMessage', newMessage);
-      setMessage('');  // Clear the input field after sending
+
+      // Use the service to send the message
+      sendMessage(newMessage);
+      setMessage(''); // Clear the input field after sending
     }
   };
 
@@ -59,14 +55,11 @@ const ChatBox = ({ userId, partnerId }) => {
               </div>
               <div
                 className={`rounded-lg py-2 px-4 max-w-xs ${
-                  msg.sender === userId
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white border border-gray-200'
+                  msg.sender === userId ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200'
                 }`}
               >
                 <p>{msg.text}</p>
                 <span className="text-xs opacity-75 mt-1 block">
-                  {/* Format the timestamp as desired */}
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
               </div>
@@ -75,7 +68,7 @@ const ChatBox = ({ userId, partnerId }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={sendMessage} className="bg-white border-t border-gray-200 p-4">
+      <form onSubmit={handleSendMessage} className="bg-white border-t border-gray-200 p-4">
         <div className="flex items-center space-x-2">
           <input
             type="text"

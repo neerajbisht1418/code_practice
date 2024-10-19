@@ -1,6 +1,6 @@
 import React from 'react';
 import UserChatPage from '../chat/UserChatPage';
-import SellerChatPage from '../chat/sellecChatPage';
+import SellerChatPage from '../chat/sellerChatPage';
 
 const ChatApp = () => {
   const userId = '6713704d225eb2492373a679'; // Replace with actual user ID

@@ -5,6 +5,8 @@ import Dashboard from "../pages/Dashboard";
 import Analytics from "../pages/Analytics";
 import Settings from "../pages/Settings";
 import ChatApp from "../pages/ChatApp";
+import UserChatPage from "../chat/UserChatPage";
+import SellerChatPage from "../chat/sellerChatPage";
 
 const AllRoutes = () => {
   return (
@@ -13,7 +15,8 @@ const AllRoutes = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/settings" element={<Settings />} />
-      <Route path="/chat" element={<ChatApp />} />
+      <Route path="/user-chat" element={<UserChatPage />} />
+      <Route path="/seller-chat" element={<SellerChatPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

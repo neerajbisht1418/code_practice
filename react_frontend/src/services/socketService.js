@@ -1,42 +1,27 @@
-// socketService.js
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
-const socket = io('http://localhost:3000', {
-  transports: ['websocket', 'polling'],
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-});
+let socket;
 
-socket.on('connect_error', (error) => {
-  console.error('Connection error:', error);
-});
+export const connectSocket = (userId) => {
+  socket = io('http://localhost:3000');
 
-socket.on('connect', () => {
-  console.log('Socket connected successfully');
-});
+  socket.on('connect', () => {
+    console.log('Connected to server');
+    socket.emit('join', { userId });
+  });
 
-socket.on('connect_error', (error) => {
-  console.error('Connection error:', error);
-});
-
-socket.on('disconnect', (reason) => {
-  console.log('Socket disconnected:', reason);
-});
-
-socket.on('reconnect_attempt', (attemptNumber) => {
-  console.log('Attempting to reconnect:', attemptNumber);
-});
-
-const initiateChat = (userId, sellerId) => {
-  socket.emit('initiate_chat', { userId, sellerId });
+  return socket;
 };
 
-const acceptInvitation = (userId, sellerId) => {
-  socket.emit('accept_invitation', { userId, sellerId });
+export const disconnectSocket = () => {
+  if (socket) socket.close();
 };
 
-const sendMessage = (senderId, receiverId, message) => {
-  socket.emit('send_message', { senderId, receiverId, message });
+export const sendMessage = (message) => {
+  console.log("message",message)
+  if (socket) socket.emit('sendMessage', message);
 };
 
-export { socket, initiateChat, acceptInvitation, sendMessage };
+export const onMessageReceived = (callback) => {
+  if (socket) socket.on('message', callback);
+};

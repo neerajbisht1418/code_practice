@@ -1,7 +1,10 @@
 import React from 'react';
 import ChatBox from './ChatBox';
 
-const UserChatPage = ({ userId, sellerId }) => {
+const UserChatPage = () => {
+  
+  const userId = '6713704d225eb2492373a679'; 
+  const sellerId = '67137039225eb2492373a674'; 
   return (
     <div className="h-full flex flex-col">
       <header className="bg-blue-600 text-white py-4 px-6">
