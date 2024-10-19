@@ -1,18 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, User } from 'lucide-react';
 import { connectSocket, sendMessage, onMessageReceived, disconnectSocket } from '../../services/socketService';
+import { fetchChatHistory, saveChatMessage } from '../../services/chatService'; // Import chatService
 
-const ChatBox = ({ userId, partnerId,productId }) => {
+const ChatBox = ({ userId, partnerId, productId }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
 
+  // Fetch chat history when component mounts
+  useEffect(() => {
+    const getChatHistory = async () => {
+      const chatHistory = await fetchChatHistory(userId, partnerId, productId);
+      setMessages(chatHistory);
+    };
+    getChatHistory();
+  }, [userId, partnerId, productId]);
+
   useEffect(() => {
     const socket = connectSocket(userId);
+    
+    // WebSocket listener for incoming messages
     onMessageReceived((message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
-    
+
     return () => disconnectSocket();
   }, [userId]);
 
@@ -20,7 +32,7 @@ const ChatBox = ({ userId, partnerId,productId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (message) {
       const newMessage = {
@@ -28,9 +40,16 @@ const ChatBox = ({ userId, partnerId,productId }) => {
         senderId: userId,
         receiverId: partnerId,
         timestamp: new Date().toISOString(),
-        productId 
+        productId
       };
+
+      // Send message via WebSocket only
       sendMessage(newMessage);
+
+      // Save the message via API (no need to update the state manually)
+      await saveChatMessage(newMessage);
+
+      // Clear the input field
       setMessage('');
     }
   };
@@ -57,8 +76,9 @@ const ChatBox = ({ userId, partnerId,productId }) => {
                 }`}
               >
                 <p>{msg.message}</p>
+                {console.log("message",msg)}
                 <span className="text-xs opacity-75 mt-1 block">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
+                  { new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
               </div>
             </div>

@@ -18,7 +18,6 @@ export const disconnectSocket = () => {
 };
 
 export const sendMessage = (message) => {
-  console.log("message",message)
   if (socket) socket.emit('sendMessage', message);
 };
 
