@@ -9,6 +9,7 @@ let socket;
 
 export const connectSocket = (userId) => {
   // Connect to the WebSocket namespace '/ws'
+  console.log("userId", userId)
   socket = io(`${socketUrl}/ws`, {
     query: { userId }  // Send userId as part of the query params when connecting
   });
