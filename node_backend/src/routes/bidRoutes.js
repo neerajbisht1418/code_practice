@@ -3,7 +3,7 @@ const { makeBid, acceptBid } = require('../controllers/bidController');
 
 const router = express.Router();
 
-router.post('/bid', makeBid);
-router.post('/bid/accept', acceptBid);
+router.post('/', makeBid);
+router.post('/accept', acceptBid);
 
 module.exports = router;

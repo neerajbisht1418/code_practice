@@ -30,7 +30,7 @@ exports.acceptBid = async (req, res) => {
     const bid = await Bid.findById(bidId);
     bid.accepted = true;
     await bid.save();
-
+console.log(bid)
     const product = await Product.findById(productId);
     if (product.sellerId.toString() === sellerId) {
       // Notify both users (via WebSocket)
@@ -43,6 +43,6 @@ exports.acceptBid = async (req, res) => {
       res.status(403).json({ error: 'Unauthorized' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to accept the bid' });
+    res.status(500).json({ error });
   }
 };
