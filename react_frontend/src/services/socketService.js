@@ -9,17 +9,20 @@ let socket;
 
 export const connectSocket = (userId) => {
   // Connect to the WebSocket namespace '/ws'
-  console.log("userId", userId)
   socket = io(`${socketUrl}/ws`, {
     query: { userId }  // Send userId as part of the query params when connecting
   });
 
   socket.on('connect', () => {
-    console.log('Connected to WebSocket server');
+    console.log(`Connected to WebSocket server. Socket ID: ${socket.id}, User ID: ${userId}`);
   });
 
   socket.on('connect_error', (err) => {
     console.error('WebSocket connection failed:', err);
+  });
+
+  socket.on('error', (error) => {
+    console.error('Socket error:', error.message);
   });
 
   return socket;
@@ -33,11 +36,11 @@ export const disconnectSocket = () => {
 };
 
 export const sendMessage = (message) => {
-  if (socket) {
+  if (socket && socket.connected) {
     socket.emit('sendMessage', message);
     console.log('Message sent:', message);
   } else {
-    console.error('Socket is not connected');
+    console.error('Socket is not connected. Unable to send message.');
   }
 };
 
@@ -45,7 +48,7 @@ export const onMessageReceived = (callback) => {
   if (socket) {
     socket.on('message', callback);
   } else {
-    console.error('Socket is not connected');
+    console.error('Socket is not initialized. Unable to set up message listener.');
   }
 };
 
@@ -53,7 +56,7 @@ export const onBidAccepted = (callback) => {
   if (socket) {
     socket.on('bidAccepted', callback);
   } else {
-    console.error('Socket is not connected');
+    console.error('Socket is not initialized. Unable to set up bid acceptance listener.');
   }
 };
 
@@ -61,6 +64,6 @@ export const onNotificationReceived = (callback) => {
   if (socket) {
     socket.on('notification', callback);
   } else {
-    console.error('Socket is not connected');
+    console.error('Socket is not initialized. Unable to set up notification listener.');
   }
 };
