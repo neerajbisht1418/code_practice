@@ -6,7 +6,7 @@ const BASE_URL = import.meta.env.VITE_NODE_ENV === "production" ? import.meta.en
 // Fetch chat history between the user and the seller for a specific product
 export const fetchChatHistory = async (userId, sellerId, productId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/${userId}/${sellerId}/${productId}`);
+    const response = await axios.get(`${BASE_URL}/api/v1/chat/${userId}/${sellerId}/${productId}`);
     return response.data.data; // Assuming your API returns { success: true, data: [...] }
   } catch (error) {
     console.error('Error fetching chat history:', error);
