@@ -28,8 +28,8 @@ app.use(helmet());
 // CORS for regular Express routes
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Allow only this frontend URL
-    methods: ['GET', 'POST'], // Restrict allowed methods
+    origin: true, // Allow requests from any origin
+    methods: ['GET', 'POST'], // You can adjust the allowed methods
     credentials: true, // Allow credentials (optional)
   })
 );
@@ -37,6 +37,9 @@ app.use(express.json());
 app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Routes
+app.get('/', (req, res) => {
+  res.json("hello neeraj");
+});
 app.use(`/api/${APP_VERSION}`, routes);
 
 // Global Error Handler Middleware
