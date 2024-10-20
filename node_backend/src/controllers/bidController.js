@@ -1,5 +1,6 @@
 const Bid = require('../models/bidModel');
 const Product = require('../models/productModel');
+const logger = require('../utils/logger');
 
 exports.makeBid = async (req, res) => {
   const { amount, bidderId, productId } = req.body;
@@ -12,11 +13,11 @@ exports.makeBid = async (req, res) => {
     // Step 2: Find the product
     const product = await Product.findById(productId);
     if (!product) {
-      console.error(`Product not found: ${productId}`);
+      logger.error(`Product not found: ${productId}`);
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    console.log(`Product found: ${product.name}, id: ${productId}`);
+    logger.info(`Product found: ${product.title}, id: ${productId}`);
 
     // Step 3: Add the bid to the product
     product.bids.push(newBid._id);
@@ -24,45 +25,46 @@ exports.makeBid = async (req, res) => {
 
     // Step 4: Check if product has a valid sellerId
     if (!product.sellerId) {
-      console.error(`Product does not have a sellerId: ${productId}`);
+      logger.error(`Product does not have a sellerId: ${productId}`);
       return res.status(400).json({ error: 'Product does not have a sellerId' });
     }
 
-    console.log(`Seller ID: ${product.sellerId}`);
+    logger.info(`Seller ID: ${product.sellerId}`);
 
     // Step 5: Notify the seller about the new bid (via WebSocket)
     const io = req.app.get('io');
     if (!io) {
-      console.error('Socket.IO is not initialized');
+      logger.error('Socket.IO is not initialized');
       return res.status(500).json({ error: 'Socket.IO not initialized' });
     }
 
     try {
-      // Access the correct namespace and check for the seller's socket connection
-      const sellerSocket = io.of('/ws').sockets.get(product.sellerId.toString());
+      // Get the seller's socket ID from the userSockets map
 
-      if (!sellerSocket) {
-        console.error(`Seller with ID ${product.sellerId} is not connected`);
-        return res.status(500).json({ error: 'Seller not connected via WebSocket' });
+      const sellerSocketId =(product.sellerId.toString());
+
+      if (!sellerSocketId) {
+        logger.warn(`Seller with ID ${product.sellerId} is not connected`);
+        // Instead of returning an error, we'll just skip the real-time notification
+        // and continue with the bid process
+      } else {
+        // Emit the new bid event to the seller
+        io.of('/ws').to(sellerSocketId).emit('newBid', { productId, bidderId });
+        logger.info(`Seller notified: ${product.sellerId}`);
       }
 
-      // Emit the new bid event to the seller
-      io.of('/ws').to(product.sellerId.toString()).emit('newBid', { productId, bidderId });
-      console.log(`Seller notified: ${product.sellerId}`);
-
     } catch (error) {
-      console.error('Error notifying seller about new bid:', error);
-      return res.status(500).json({ error: 'Failed to notify the seller about the new bid' });
+      logger.error('Error notifying seller about new bid:', error);
+      // Instead of returning an error, we'll log it and continue
     }
 
     // Step 6: Send the successful response to the client
     res.status(201).json(newBid);
   } catch (error) {
-    console.error('Error making a bid:', error);
+    logger.error('Error making a bid:', error);
     res.status(500).json({ error: 'Failed to make a bid' });
   }
 };
-
 
 exports.acceptBid = async (req, res) => {
   const { bidId, productId, sellerId } = req.body;

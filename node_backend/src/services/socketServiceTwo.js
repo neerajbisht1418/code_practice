@@ -1,7 +1,7 @@
 const socketIO = require('socket.io');
 const logger = require('../utils/logger');
 
-const users = {}; // Track user sockets
+const users = new Map(); // Track user sockets using a Map
 
 const initializeSocket = (server) => {
   const io = socketIO(server, {
@@ -16,10 +16,11 @@ const initializeSocket = (server) => {
   const chatNamespace = io.of('/ws');
 
   chatNamespace.on('connection', (socket) => {
-    logger.info(`A user connected to /ws with socket ID: ${socket.id}`);
+    const userId = socket.handshake.query.userId;
+    logger.info(`New connection attempt for user ${userId} with socket ID: ${socket.id}`);
 
     // User joins the namespace
-    socket.on('join', ({ userId }) => handleUserJoin(socket, userId));
+    handleUserJoin(socket, userId);
 
     // Handle message sending
     socket.on('sendMessage', (message) => handleSendMessage(socket, chatNamespace, message));
@@ -45,36 +46,52 @@ const handleUserJoin = (socket, userId) => {
     return;
   }
 
-  // Add user to the users object
-  users[userId] = socket.id;
+  // Remove any existing socket for this user
+  if (users.has(userId)) {
+    const oldSocketId = users.get(userId);
+    logger.info(`Replacing old socket connection for user ${userId}. Old socket ID: ${oldSocketId}`);
+    const oldSocket = chatNamespace.sockets.get(oldSocketId);
+    if (oldSocket) {
+      oldSocket.disconnect(true);
+    }
+  }
+
+  // Add user to the users Map
+  users.set(userId, socket.id);
 
   // Log both userId and socket.id
   logger.info(`User ${userId} joined /ws with socket ID: ${socket.id}`);
+  logger.info(`Current active connections: ${users.size}`);
+
+  // Emit a confirmation to the client
+  socket.emit('connectionConfirmed', { userId, socketId: socket.id });
 };
 
 // Handle sending messages between users
 const handleSendMessage = async (socket, chatNamespace, message) => {
-  const { receiverId, content } = message;
+  const { senderId, receiverId, content } = message;
   
-  if (!receiverId || !content) {
-    logger.warn('Message sending failed due to missing receiverId or content');
-    socket.emit('error', { message: 'Message content and receiver ID are required.' });
+  if (!senderId || !receiverId || !content) {
+    logger.warn('Message sending failed due to missing senderId, receiverId, or content');
+    socket.emit('error', { message: 'Message content, sender ID, and receiver ID are required.' });
     return;
   }
 
-  const receiverSocketId = users[receiverId];
+  const receiverSocketId = users.get(receiverId);
   
   try {
     // Emit message to receiver if they are connected
     if (receiverSocketId) {
       chatNamespace.to(receiverSocketId).emit('message', message);
+      logger.info(`Message sent from user ${senderId} to ${receiverId}`);
+    } else {
+      logger.warn(`Receiver ${receiverId} is not connected. Message not delivered.`);
     }
 
     // Emit message back to sender for confirmation
-    socket.emit('message', message);
-    logger.info(`Message sent from user ${message.senderId} to ${receiverId}`);
+    socket.emit('messageSent', message);
   } catch (error) {
-    logger.error('Error saving or sending message:', error);
+    logger.error('Error sending message:', error);
     socket.emit('error', { message: 'Failed to send message, please try again.' });
   }
 };
@@ -89,7 +106,7 @@ const handleAcceptBid = (socket, chatNamespace, productId, bid) => {
     return;
   }
 
-  const receiverSocketId = users[bidderId];
+  const receiverSocketId = users.get(bidderId);
   
   if (!receiverSocketId) {
     logger.warn(`Bidder ${bidderId} is not connected. Cannot send bid acceptance notification.`);
@@ -111,7 +128,7 @@ const handleSendNotification = (chatNamespace, notification) => {
     return;
   }
 
-  const receiverSocketId = users[userId];
+  const receiverSocketId = users.get(userId);
   
   if (!receiverSocketId) {
     logger.warn(`User ${userId} is not connected. Cannot send notification.`);
@@ -124,11 +141,18 @@ const handleSendNotification = (chatNamespace, notification) => {
 
 // Handle user disconnect event
 const handleUserDisconnect = (socket) => {
-  const userId = Object.keys(users).find((key) => users[key] === socket.id);
+  let disconnectedUserId = null;
+  for (const [userId, socketId] of users.entries()) {
+    if (socketId === socket.id) {
+      disconnectedUserId = userId;
+      break;
+    }
+  }
   
-  if (userId) {
-    delete users[userId];
-    logger.info(`User ${userId} disconnected from /ws with socket ID: ${socket.id}`);
+  if (disconnectedUserId) {
+    users.delete(disconnectedUserId);
+    logger.info(`User ${disconnectedUserId} disconnected from /ws with socket ID: ${socket.id}`);
+    logger.info(`Remaining active connections: ${users.size}`);
   } else {
     logger.warn(`User disconnect detected, but no associated userId for socket ID: ${socket.id}`);
   }
