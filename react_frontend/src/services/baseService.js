@@ -1,7 +1,8 @@
 import axios from "axios";
 import { store } from "../redux/store";
 import { clearAuth, setrefreshToken } from "../redux/slice/authSlice"
-const BASE_URL = import.meta.env.VITE_API_URL;
+const BASE_URL = import.meta.env.VITE_NODE_ENV === "production" ? import.meta.env.VITE_LOCAL_BACKEND_URL:import.meta.env.VITE_LIVE_BACKEND_URL
+
 const baseService = axios.create({
     baseURL: BASE_URL,
     withCredentials: false,
