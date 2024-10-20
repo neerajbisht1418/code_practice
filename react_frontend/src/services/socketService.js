@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
-const socketUrl = import.meta.env.VITE_NODE_ENV === "development" ? import.meta.env.VITE_LOCAL_WEBSOCKET:import.meta.env.VITE_LIVE_WEBSOCKET
-console.log(socketUrl)
+const socketUrl = import.meta.env.VITE_NODE_ENV === "development" ? import.meta.env.VITE_LOCAL_BACKEND_URL:import.meta.env.VITE_LIVE_BACKEND_URL
+
 let socket;
 
 export const connectSocket = (userId) => {
