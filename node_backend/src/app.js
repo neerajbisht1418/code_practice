@@ -10,7 +10,7 @@ const logger = require('./utils/logger');
 const http = require('http');
 
 // Import the socket service
-const { initializeSocket } = require('./services/socketService');
+const { initializeSocket } = require('./services/socketServiceTwo');
 
 const app = express();
 
@@ -47,9 +47,11 @@ app.use(errorHandler);
 
 // Create HTTP server
 const server = http.createServer(app);
+const io = initializeSocket(server);
+app.set('io', io);
 
 // Initialize Socket.IO
-initializeSocket(server);
+// initializeSocket(server);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
