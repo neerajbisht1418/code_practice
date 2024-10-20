@@ -1,10 +1,10 @@
 import { io } from 'socket.io-client';
-const url = import.meta.env.VITE_NODE_ENV === "production" ? import.meta.env.VITE_LOCAL_BACKEND_URL:import.meta.env.VITE_LIVE_BACKEND_URL
+const socketUrl = import.meta.env.VITE_NODE_ENV === "development" ? import.meta.env.VITE_LOCAL_BACKEND_URL:import.meta.env.VITE_LIVE_BACKEND_URL
 
 let socket;
 
 export const connectSocket = (userId) => {
-  socket = io(url);
+  socket = io(socketUrl);
 
   socket.on('connect', () => {
     console.log('Connected to server');
