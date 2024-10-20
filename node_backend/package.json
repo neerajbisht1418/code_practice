@@ -1,16 +1,16 @@
 {
-  "name": "coding-practive",
+  "name": "coding-practice",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A Node.js backend project",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "build": "echo 'No build step needed'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "echo 'No build step needed for backend'",
+    "test": "jest"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["Node.js", "Express", "Backend", "API"],
+  "author": "Neeraj",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
