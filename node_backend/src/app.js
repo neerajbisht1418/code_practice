@@ -25,20 +25,21 @@ connectDB()
 // Middleware
 app.use(helmet());
 
-// CORS for regular Express routes
+// CORS configuration
 app.use(
   cors({
-    origin: true, // Allow requests from any origin
+    origin: NODE_ENV === 'production' ? 'https://your-production-domain.com' : true, // Allow specific domains in production
     methods: ['GET', 'POST'], // You can adjust the allowed methods
-    credentials: true, // Allow credentials (optional)
+    credentials: true, // Allow credentials (cookies, authorization headers)
   })
 );
+
 app.use(express.json());
 app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Routes
 app.get('/', (req, res) => {
-  res.json("hello neeraj");
+  res.json("Hello Neeraj");
 });
 app.use(`/api/${APP_VERSION}`, routes);
 
@@ -47,11 +48,10 @@ app.use(errorHandler);
 
 // Create HTTP server
 const server = http.createServer(app);
-const io = initializeSocket(server);
-app.set('io', io);
 
 // Initialize Socket.IO
-// initializeSocket(server);
+const io = initializeSocket(server);
+app.set('io', io);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
